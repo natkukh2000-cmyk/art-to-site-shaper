@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as ContentPlansRouteImport } from './routes/content-plans'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as ClientsIndexRouteImport } from './routes/clients/index'
 import { Route as ClientsClientIdRouteImport } from './routes/clients/$clientId'
@@ -29,6 +31,16 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
 const ContentPlansRoute = ContentPlansRouteImport.update({
   id: '/content-plans',
   path: '/content-plans',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TasksRoute = TasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamRoute = TeamRouteImport.update({
@@ -51,6 +63,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/content-plans': typeof ContentPlansRoute
+  '/settings': typeof SettingsRoute
+  '/tasks': typeof TasksRoute
   '/team': typeof TeamRoute
   '/clients/$clientId': typeof ClientsClientIdRoute
   '/clients/': typeof ClientsIndexRoute
@@ -59,6 +73,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/content-plans': typeof ContentPlansRoute
+  '/settings': typeof SettingsRoute
+  '/tasks': typeof TasksRoute
   '/team': typeof TeamRoute
   '/clients/$clientId': typeof ClientsClientIdRoute
   '/clients': typeof ClientsIndexRoute
@@ -68,6 +84,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/content-plans': typeof ContentPlansRoute
+  '/settings': typeof SettingsRoute
+  '/tasks': typeof TasksRoute
   '/team': typeof TeamRoute
   '/clients/$clientId': typeof ClientsClientIdRoute
   '/clients/': typeof ClientsIndexRoute
@@ -78,6 +96,8 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/content-plans'
+    | '/settings'
+    | '/tasks'
     | '/team'
     | '/clients/$clientId'
     | '/clients/'
@@ -86,6 +106,8 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/content-plans'
+    | '/settings'
+    | '/tasks'
     | '/team'
     | '/clients/$clientId'
     | '/clients'
@@ -94,6 +116,8 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/content-plans'
+    | '/settings'
+    | '/tasks'
     | '/team'
     | '/clients/$clientId'
     | '/clients/'
@@ -103,6 +127,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
   ContentPlansRoute: typeof ContentPlansRoute
+  SettingsRoute: typeof SettingsRoute
+  TasksRoute: typeof TasksRoute
   TeamRoute: typeof TeamRoute
   ClientsClientIdRoute: typeof ClientsClientIdRoute
   ClientsIndexRoute: typeof ClientsIndexRoute
@@ -129,6 +155,20 @@ declare module '@tanstack/react-router' {
       path: '/content-plans'
       fullPath: '/content-plans'
       preLoaderRoute: typeof ContentPlansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tasks': {
+      id: '/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof TasksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/team': {
@@ -159,6 +199,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
   ContentPlansRoute: ContentPlansRoute,
+  SettingsRoute: SettingsRoute,
+  TasksRoute: TasksRoute,
   TeamRoute: TeamRoute,
   ClientsClientIdRoute: ClientsClientIdRoute,
   ClientsIndexRoute: ClientsIndexRoute,
