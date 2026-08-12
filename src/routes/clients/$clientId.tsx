@@ -88,7 +88,7 @@ function ClientPage() {
 
         <SectionCard title="Команда проекта">
           <ul className="space-y-3">
-            {client.team.map((m) => (
+            {client.team.map((m: (typeof clients)[number]["team"][number]) => (
               <li key={m.role} className="flex items-center gap-3 rounded-xl border border-border p-3.5">
                 <Avatar initials={m.initials} tone={m.tone} className="h-10 w-10 text-xs" />
                 <div className="leading-tight">
