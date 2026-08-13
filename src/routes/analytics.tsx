@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Users, Eye, Heart, MessageCircle, Repeat2, MousePointerClick, TrendingUp, Download } from "lucide-react";
+import { Users, Eye, Heart, MessageCircle, Repeat2, MousePointerClick, TrendingUp, Download, Share2 } from "lucide-react";
 import { AppLayout, TopUser } from "@/components/AppLayout";
 import { SectionCard, StatCard } from "@/components/ui-kit";
-import { analyticsWeeks, chartData } from "@/lib/data";
+import { analyticsClients, analyticsWeeks, chartData } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/analytics")({
@@ -29,12 +29,24 @@ function Analytics() {
     <AppLayout>
       <div className="mb-7 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Аналитика</h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">Edward Makaron · 21 – 27 апреля 2026</p>
+          <p className="text-xs text-muted-foreground">Аналитика</p>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight">Аналитика</h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">Неделя: 3 – 9 августа 2026</p>
         </div>
-        <div className="flex items-center gap-5">
+        <div className="flex flex-wrap items-center gap-5">
+          <label className="block">
+            <span className="mb-1.5 block text-xs text-muted-foreground">Клиент</span>
+            <select className="h-11 rounded-xl border border-border bg-card px-3 text-sm outline-none focus:border-primary">
+              {analyticsClients.map((c) => (
+                <option key={c.id}>{c.name} — {c.niche}</option>
+              ))}
+            </select>
+          </label>
           <button className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-medium">
             <Download className="h-4 w-4" /> Экспорт
+          </button>
+          <button className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-medium">
+            <Share2 className="h-4 w-4" /> Поделиться
           </button>
           <TopUser />
         </div>
@@ -109,9 +121,9 @@ function Analytics() {
         <SectionCard title="Заметки">
           <ul className="space-y-3 text-sm">
             {[
-              { d: "26.04.2026", t: "Снижение комментариев связано с отпуском клиента — меньше личных ответов." },
-              { d: "24.04.2026", t: "Добавить больше вопросов в конце поста для вовлечения аудитории." },
-              { d: "22.04.2026", t: "Тестируем новый формат: короткие инсайты по 600 символов." },
+              { d: "09.08.2026", t: "Снижение комментариев связано с отпуском клиента — меньше личных ответов." },
+              { d: "06.08.2026", t: "Добавить больше вопросов в конце поста для вовлечения аудитории." },
+              { d: "04.08.2026", t: "Тестируем новый формат: короткие инсайты по 600 символов." },
             ].map((n) => (
               <li key={n.d} className="rounded-xl border border-border p-4">
                 <p className="text-xs text-muted-foreground">{n.d}</p>

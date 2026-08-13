@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppLayout, TopUser } from "@/components/AppLayout";
-import { Avatar, Pill, SectionCard } from "@/components/ui-kit";
+import { Avatar, Pill, SectionCard, StatusBadge } from "@/components/ui-kit";
+import { clients } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/settings")({
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/settings")({
   component: Settings,
 });
 
-const tabs = ["Общие настройки", "Роли и обязанности", "Уведомления"] as const;
+const tabs = ["Общие настройки", "Роли и обязанности", "Клиенты", "Уведомления"] as const;
 
 const roles = [
   { name: "Копирайтер", desc: "Пишет тексты, готовит контент-планы, вносит правки", people: 2 },
@@ -25,13 +26,12 @@ const roles = [
   { name: "Директор", desc: "Полный доступ ко всем разделам и настройкам", people: 1 },
 ];
 
-const access = [
-  { client: "Edward Makaron", copy: "Дарья Фокина", smm: "Настя Ильина", manager: "Наташа Сергеенко" },
-  { client: "EHR Synergy", copy: "Дарья Фокина", smm: "Настя Ильина", manager: "Наташа Сергеенко" },
-  { client: "HealthTech Leaders", copy: "Иван Белов", smm: "Сабина Рахимова", manager: "Наташа Сергеенко" },
-  { client: "SaaStr", copy: "Сабина Рахимова", smm: "Настя Ильина", manager: "Наташа Сергеенко" },
-  { client: "FinTech Insights", copy: "Дарья Фокина", smm: "Сабина Рахимова", manager: "Наташа Сергеенко" },
-];
+const access = clients.slice(0, 6).map((c) => ({
+  client: c.name,
+  copy: c.team[0]!.name,
+  smm: c.team[1]!.name,
+  manager: "Наташа Сергеенко",
+}));
 
 function Settings() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("Общие настройки");
@@ -58,7 +58,7 @@ function Settings() {
         ))}
       </div>
 
-      {tab === "Роли и обязанности" ? <RolesTab /> : <GeneralTab />}
+      {tab === "Роли и обязанности" ? <RolesTab /> : tab === "Клиенты" ? <ClientsTab /> : <GeneralTab />}
     </AppLayout>
   );
 }
@@ -169,6 +169,44 @@ function RolesTab() {
         </table>
       </SectionCard>
     </div>
+  );
+}
+
+function ClientsTab() {
+  return (
+    <SectionCard title="Клиенты" subtitle="Коммерческие данные по всем клиентам" bodyClassName="px-0 pb-2 pt-4">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-y border-border text-left text-xs text-muted-foreground">
+            <th className="px-6 py-3 font-normal">Клиент</th>
+            <th className="px-6 py-3 font-normal">Ниша</th>
+            <th className="px-6 py-3 font-normal">Язык</th>
+            <th className="px-6 py-3 font-normal">Дата старта</th>
+            <th className="px-6 py-3 font-normal">Сумма оплаты</th>
+            <th className="px-6 py-3 font-normal">Договор</th>
+            <th className="px-6 py-3 font-normal">Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          {clients.map((c) => (
+            <tr key={c.id} className="border-b border-border/70 last:border-0">
+              <td className="px-6 py-4">
+                <span className="flex items-center gap-2.5">
+                  <Avatar initials={c.initials} tone={c.tone} className="h-8 w-8 text-[10px]" />
+                  <span className="font-medium">{c.name}</span>
+                </span>
+              </td>
+              <td className="px-6 py-4 text-muted-foreground">{c.niche}</td>
+              <td className="px-6 py-4 text-muted-foreground">{c.language}</td>
+              <td className="px-6 py-4 text-muted-foreground">{c.start}</td>
+              <td className="px-6 py-4 text-muted-foreground">{c.amount}</td>
+              <td className="px-6 py-4"><a href="#" className="text-primary">{c.contract}</a></td>
+              <td className="px-6 py-4"><StatusBadge status={c.status} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </SectionCard>
   );
 }
 
