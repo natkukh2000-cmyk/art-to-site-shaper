@@ -1,22 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search, Plus, Users, CalendarDays, CheckCircle2, CreditCard, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { Search, Plus, Users, CalendarDays, CheckCircle2, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { AppLayout, TopUser } from "@/components/AppLayout";
 import { Avatar, StatCard, StatusBadge } from "@/components/ui-kit";
-import { clients } from "@/lib/data";
+import { Modal, ModalActions, ModalField } from "@/components/Modal";
+import { clients, templates } from "@/lib/data";
 
 export const Route = createFileRoute("/clients/")({
   head: () => ({
     meta: [
       { title: "Клиенты — Pageli Operations" },
-      { name: "description", content: "Список клиентов агентства: ответственные, статусы, оплаты и плановые публикации." },
+      { name: "description", content: "Список клиентов агентства: ниши, ответственные копирайтеры и менеджеры страниц, статусы и шаблоны." },
       { property: "og:title", content: "Клиенты — Pageli Operations" },
-      { property: "og:description", content: "Список клиентов агентства: ответственные, статусы, оплаты и публикации." },
+      { property: "og:description", content: "Список клиентов агентства: ниши, ответственные и шаблоны работы." },
     ],
   }),
   component: ClientsPage,
 });
 
 function ClientsPage() {
+  const [open, setOpen] = useState(false);
+
   return (
     <AppLayout>
       <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
@@ -29,7 +33,10 @@ function ClientsPage() {
               className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-4 text-sm outline-none placeholder:text-muted-foreground focus:border-primary"
             />
           </div>
-          <button className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground">
+          <button
+            onClick={() => setOpen(true)}
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground"
+          >
             <Plus className="h-4 w-4" /> Добавить клиента
           </button>
           <TopUser />
@@ -37,10 +44,10 @@ function ClientsPage() {
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard icon={<Users className="h-5 w-5" />} label="Всего клиентов" value="6" hint="Активных: 6" hintClass="text-success font-medium" />
-        <StatCard icon={<CalendarDays className="h-5 w-5" />} tone="info" label="Плановых постов" value="18" hint="На эту неделю" />
-        <StatCard icon={<CheckCircle2 className="h-5 w-5" />} tone="success" label="Опубликовано" value="12" hint="На этой неделе" />
-        <StatCard icon={<CreditCard className="h-5 w-5" />} tone="primary" label="Оплаты в этом месяце" value="3" hint="1 500 USD" />
+        <StatCard icon={<Users className="h-5 w-5" />} label="Всего клиентов" value="8" hint="Активных: 8" hintClass="text-success font-medium" />
+        <StatCard icon={<CalendarDays className="h-5 w-5" />} tone="info" label="Плановых постов" value="24" hint="На эту неделю" />
+        <StatCard icon={<CheckCircle2 className="h-5 w-5" />} tone="success" label="Опубликовано" value="16" hint="На этой неделе" />
+        <StatCard icon={<FileText className="h-5 w-5" />} tone="primary" label="Шаблонов" value="4" hint="Готовы к работе" />
       </div>
 
       <section className="card-surface mt-6 overflow-hidden">
@@ -50,8 +57,6 @@ function ClientsPage() {
               <th className="px-6 py-4 font-normal">Клиент</th>
               <th className="px-6 py-4 font-normal">Ответственные</th>
               <th className="px-6 py-4 font-normal">Статус</th>
-              <th className="px-6 py-4 font-normal">Последняя оплата</th>
-              <th className="px-6 py-4 font-normal">Сумма</th>
               <th className="px-6 py-4 font-normal">Действия</th>
             </tr>
           </thead>
@@ -81,8 +86,6 @@ function ClientsPage() {
                   </div>
                 </td>
                 <td className="px-6 py-5"><StatusBadge status={c.status} /></td>
-                <td className="px-6 py-5 text-muted-foreground">{c.lastPayment}</td>
-                <td className="px-6 py-5 text-muted-foreground">{c.amount}</td>
                 <td className="px-6 py-5">
                   <Link
                     to="/clients/$clientId"
@@ -97,7 +100,7 @@ function ClientsPage() {
           </tbody>
         </table>
         <div className="flex items-center justify-between px-6 py-5">
-          <p className="text-sm text-muted-foreground">Показано 1–6 из 6</p>
+          <p className="text-sm text-muted-foreground">Показано 1–8 из 8</p>
           <div className="flex items-center gap-2">
             <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground"><ChevronLeft className="h-4 w-4" /></button>
             <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary text-sm font-medium text-primary">1</button>
@@ -105,6 +108,60 @@ function ClientsPage() {
           </div>
         </div>
       </section>
+
+      <section className="card-surface mt-6 p-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold tracking-tight">Шаблоны</h2>
+          <button className="inline-flex items-center gap-2 rounded-xl border border-border px-3.5 py-2 text-sm font-medium">
+            <Plus className="h-4 w-4" /> Новый шаблон
+          </button>
+        </div>
+        <ul className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {templates.map((t) => (
+            <li key={t.name} className="rounded-xl border border-border p-4">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
+                <FileText className="h-5 w-5" />
+              </span>
+              <p className="mt-3 font-semibold">{t.name}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t.desc}</p>
+              <p className="mt-3 text-xs text-muted-foreground">Обновлён {t.updated}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <AddClientModal open={open} onClose={() => setOpen(false)} />
     </AppLayout>
+  );
+}
+
+export function AddClientModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Добавить клиента"
+      subtitle="Заполните рабочую и коммерческую информацию"
+      footer={<ModalActions onClose={onClose} submit="Добавить клиента" />}
+    >
+      <h3 className="text-sm font-semibold">Рабочая информация</h3>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <ModalField label="Имя и фамилия" placeholder="Например, Андрей Ильмовский" />
+        <ModalField label="Часовой пояс" options={["GMT+3 · Москва", "GMT+1 · Берлин", "GMT-5 · Нью-Йорк"]} />
+        <ModalField label="Ссылка на LinkedIn" placeholder="linkedin.com/in/..." />
+        <ModalField label="Ниша" placeholder="Например, iGaming / DevOps" />
+        <ModalField label="Язык ведения" options={["Русский", "Английский"]} />
+        <ModalField label="Позиционирование" placeholder="Как клиент хочет выглядеть" />
+        <ModalField className="sm:col-span-2" label="Описание" textarea placeholder="Чем занимается клиент, о чём пишем" />
+      </div>
+
+      <h3 className="mt-6 border-t border-border pt-6 text-sm font-semibold">Коммерческая информация</h3>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <ModalField label="Дата старта" placeholder="дд.мм.гггг" />
+        <ModalField label="Сумма оплаты" placeholder="500 USD" />
+        <ModalField label="Ссылка на договор" placeholder="Ссылка на файл" />
+        <ModalField label="Статус" options={["Активный", "На паузе", "Завершён"]} />
+      </div>
+    </Modal>
   );
 }

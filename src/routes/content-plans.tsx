@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { CalendarDays, CheckCircle2, Clock, FileEdit, ChevronLeft, ChevronRight, Plus, LayoutGrid, List } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock, FileEdit, ChevronLeft, ChevronRight, Plus, LayoutGrid, List, Paperclip } from "lucide-react";
 import { AppLayout, TopUser } from "@/components/AppLayout";
-import { Avatar, StatCard, StatusBadge } from "@/components/ui-kit";
+import { Avatar, StatCard } from "@/components/ui-kit";
 import { calendarEvents, planPosts } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -10,18 +10,18 @@ export const Route = createFileRoute("/content-plans")({
   head: () => ({
     meta: [
       { title: "Контент-планы — Pageli Operations" },
-      { name: "description", content: "Календарь и список публикаций клиента: темы, авторы, статусы и даты выхода постов." },
+      { name: "description", content: "Календарь и список публикаций клиента: темы, исполнители задач, даты подготовки и ссылки на посты." },
       { property: "og:title", content: "Контент-планы — Pageli Operations" },
-      { property: "og:description", content: "Календарь и список публикаций: темы, авторы, статусы и даты." },
+      { property: "og:description", content: "Календарь и список публикаций: темы, исполнители и ссылки." },
     ],
   }),
   component: ContentPlans,
 });
 
-const statusColor: Record<string, string> = {
-  Опубликован: "border-l-success bg-success-soft text-success",
-  Запланирован: "border-l-primary bg-primary-soft text-primary",
-  Черновик: "border-l-warning bg-warning-soft text-warning-foreground",
+const roleTone: Record<string, string> = {
+  Копирайтер: "border-l-primary bg-primary-soft text-primary",
+  SMM: "border-l-pink bg-pink-soft text-pink",
+  "Аккаунт-менеджер": "border-l-warning bg-warning-soft text-warning-foreground",
 };
 
 function ContentPlans() {
@@ -32,7 +32,7 @@ function ContentPlans() {
       <div className="mb-7 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Контент-план</h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">Edward Makaron · Май 2026</p>
+          <p className="mt-1.5 text-sm text-muted-foreground">Андрей Ильмовский · Август 2026</p>
         </div>
         <div className="flex items-center gap-5">
           <div className="flex rounded-xl border border-border bg-card p-1">
@@ -69,11 +69,11 @@ function ContentPlans() {
 }
 
 function CalendarView() {
-  const cells = Array.from({ length: 35 }, (_, i) => i - 3);
+  const cells = Array.from({ length: 35 }, (_, i) => i - 4);
   return (
     <section className="card-surface mt-6 overflow-hidden">
       <header className="flex items-center justify-between border-b border-border px-6 py-4">
-        <h2 className="text-lg font-semibold tracking-tight">Май 2026</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Август 2026</h2>
         <div className="flex items-center gap-2">
           <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground"><ChevronLeft className="h-4 w-4" /></button>
           <button className="rounded-lg border border-border px-3.5 py-2 text-sm font-medium">Сегодня</button>
@@ -92,24 +92,41 @@ function CalendarView() {
           return (
             <div key={i} className={cn("min-h-[124px] border-b border-r border-border p-2.5", !inMonth && "bg-muted/40")}>
               <span className={cn("text-xs font-medium", !inMonth ? "text-muted-foreground/60" : "text-muted-foreground")}>
-                {inMonth ? d : d < 1 ? 27 + d : d - 31}
+                {inMonth ? d : d < 1 ? 31 + d : d - 31}
               </span>
               <div className="mt-2 space-y-1.5">
-                {events.map((e) => (
-                  <div key={e.title} className={cn("rounded-md border-l-2 px-2 py-1.5 text-[11px] leading-tight", statusColor[e.status])}>
-                    <span className="block font-semibold">{e.time}</span>
-                    <span className="block">{e.title}</span>
-                  </div>
-                ))}
+                {events.map((e) => {
+                  const done = e.status === "Опубликован";
+                  return (
+                    <div
+                      key={e.title}
+                      className={cn(
+                        "rounded-md border-l-2 px-2 py-1.5 text-[11px] leading-tight",
+                        done ? "border-l-success bg-success-soft text-success" : roleTone[e.ownerRole ?? ""] ?? "border-l-primary bg-primary-soft text-primary",
+                      )}
+                    >
+                      <span className="block font-semibold">{e.time}</span>
+                      <span className="block">{e.title}</span>
+                      {done ? (
+                        <a href={e.link} className="mt-1 flex items-center gap-1 font-medium">
+                          <CheckCircle2 className="h-3 w-3" /> Опубликовано <Paperclip className="h-3 w-3" />
+                        </a>
+                      ) : (
+                        <span className="mt-1 block font-medium">{e.owner} · {e.ownerRole}</span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
         })}
       </div>
-      <div className="flex items-center gap-6 px-6 py-4 text-xs text-muted-foreground">
-        <span className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-primary" />Запланирован</span>
-        <span className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-success" />Опубликован</span>
-        <span className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-warning" />Черновик</span>
+      <div className="flex flex-wrap items-center gap-6 px-6 py-4 text-xs text-muted-foreground">
+        <span className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-primary" />Копирайтер</span>
+        <span className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-pink" />SMM</span>
+        <span className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-warning" />Аккаунт-менеджер</span>
+        <span className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-success" />Опубликовано</span>
       </div>
     </section>
   );
@@ -135,31 +152,48 @@ function ListView() {
             <tr className="border-b border-border text-left text-xs text-muted-foreground">
               <th className="px-6 py-4 font-normal">Дата</th>
               <th className="px-6 py-4 font-normal">Тема поста</th>
-              <th className="px-6 py-4 font-normal">Ответственный</th>
-              <th className="px-6 py-4 font-normal">Статус</th>
-              <th className="px-6 py-4 font-normal">Подготовлен</th>
-              <th className="px-6 py-4 font-normal">Опубликован</th>
+              <th className="px-6 py-4 font-normal">У кого задача</th>
+              <th className="px-6 py-4 font-normal">Подготовлено</th>
+              <th className="px-6 py-4 font-normal">Опубликовано</th>
+              <th className="px-6 py-4 font-normal">Ссылка</th>
             </tr>
           </thead>
           <tbody>
-            {planPosts.map((p) => (
-              <tr key={p.date} className="border-b border-border/70 last:border-0">
-                <td className="px-6 py-4 font-medium">{p.date}</td>
-                <td className="px-6 py-4">{p.topic}</td>
-                <td className="px-6 py-4">
-                  <span className="flex items-center gap-2.5">
-                    <Avatar initials={p.initials} tone={p.ownerRole === "SMM" ? "pink" : "primary"} className="h-8 w-8 text-[10px]" />
-                    <span className="leading-tight">
-                      <span className="block text-[13px] font-medium">{p.owner}</span>
-                      <span className="block text-[11px] text-muted-foreground">{p.ownerRole}</span>
-                    </span>
-                  </span>
-                </td>
-                <td className="px-6 py-4"><StatusBadge status={p.status} /></td>
-                <td className="px-6 py-4 text-muted-foreground">{p.prepared}</td>
-                <td className="px-6 py-4 text-muted-foreground">{p.published}</td>
-              </tr>
-            ))}
+            {planPosts.map((p) => {
+              const done = p.task === "Опубликовано";
+              return (
+                <tr key={p.date} className="border-b border-border/70 last:border-0">
+                  <td className="px-6 py-4 font-medium">{p.date}</td>
+                  <td className="px-6 py-4">{p.topic}</td>
+                  <td className="px-6 py-4">
+                    {done ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-md bg-success-soft px-2.5 py-1 text-xs font-medium text-success">
+                        <CheckCircle2 className="h-3.5 w-3.5" /> Опубликовано
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2.5">
+                        <Avatar initials={p.initials} tone={p.task === "SMM" ? "pink" : p.task === "Аккаунт-менеджер" ? "warning" : "primary"} className="h-8 w-8 text-[10px]" />
+                        <span className="leading-tight">
+                          <span className="block text-[13px] font-medium">{p.owner}</span>
+                          <span className="block text-[11px] text-muted-foreground">{p.task}</span>
+                        </span>
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-muted-foreground">{p.prepared}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{p.published}</td>
+                  <td className="px-6 py-4">
+                    {done && p.link ? (
+                      <a href={p.link} className="inline-flex items-center gap-1.5 text-primary">
+                        <Paperclip className="h-4 w-4" /> Пост
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </section>

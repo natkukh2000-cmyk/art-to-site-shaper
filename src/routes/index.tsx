@@ -1,25 +1,27 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Users, CalendarDays, CheckCircle2, LayoutList, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { AlertTriangle, ArrowRight, ChevronLeft, ChevronRight, Clock, CalendarClock, UserX, FileClock } from "lucide-react";
 import { AppLayout, TopUser } from "@/components/AppLayout";
-import { Avatar, SectionCard, StatCard, StatusBadge } from "@/components/ui-kit";
-import { activeClientsShort, latestPosts, todayTasks } from "@/lib/data";
+import { Avatar, SectionCard, StatusBadge } from "@/components/ui-kit";
+import { activeClientsShort, attentionItems, todayTasks } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Pageli Operations — панель управления агентством" },
-      { name: "description", content: "Обзор задач, клиентов, контент-планов и публикаций агентства Pageli за сегодня." },
+      { name: "description", content: "Обзор задач, клиентов, контент-планов и точек внимания агентства Pageli за сегодня." },
       { property: "og:title", content: "Pageli Operations — панель управления агентством" },
-      { property: "og:description", content: "Обзор задач, клиентов, контент-планов и публикаций агентства Pageli." },
+      { property: "og:description", content: "Обзор задач, клиентов, контент-планов и точек внимания агентства Pageli." },
     ],
   }),
   component: Index,
 });
 
-const monthDays = Array.from({ length: 35 }, (_, i) => i - 3);
-const published = [12, 15];
-const planned = [18, 21, 22, 23, 26, 29, 30];
+const monthDays = Array.from({ length: 35 }, (_, i) => i - 4);
+const published = [3, 4];
+const planned = [5, 6, 7, 10, 12, 14, 17];
+
+const attentionIcons = [AlertTriangle, FileClock, CalendarClock, UserX];
 
 function Index() {
   return (
@@ -27,19 +29,12 @@ function Index() {
       <div className="mb-7 flex items-start justify-between gap-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Добрый день, Наталья! 👋</h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">Вот что происходит в Pageli сегодня.</p>
+          <p className="mt-1.5 text-sm text-muted-foreground">Вот что происходит в Pageli сегодня, 11 августа 2026.</p>
         </div>
         <TopUser />
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard icon={<Users className="h-5 w-5" />} label="Активные клиенты" value="6" hint="+1 за неделю" hintClass="text-success font-medium" />
-        <StatCard icon={<CalendarDays className="h-5 w-5" />} tone="info" label="Плановые посты" value="18" hint="На эту неделю" />
-        <StatCard icon={<CheckCircle2 className="h-5 w-5" />} tone="success" label="Опубликовано" value="12" hint="На этой неделе" />
-        <StatCard icon={<LayoutList className="h-5 w-5" />} tone="warning" label="Мои задачи" value="7" hint="На сегодня" />
-      </div>
-
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+      <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
         <SectionCard title="Мои задачи на сегодня" bodyClassName="px-6 pb-5 pt-3">
           <table className="w-full text-sm">
             <thead>
@@ -74,7 +69,7 @@ function Index() {
         <SectionCard title="Календарь публикаций">
           <div className="mb-3 flex items-center justify-between">
             <button className="text-muted-foreground"><ChevronLeft className="h-4 w-4" /></button>
-            <p className="text-sm font-semibold">Май 2026</p>
+            <p className="text-sm font-semibold">Август 2026</p>
             <button className="text-muted-foreground"><ChevronRight className="h-4 w-4" /></button>
           </div>
           <div className="grid grid-cols-7 gap-y-2 text-center text-xs">
@@ -83,14 +78,14 @@ function Index() {
             ))}
             {monthDays.map((d, i) => {
               const inMonth = d >= 1 && d <= 31;
-              const label = inMonth ? d : d < 1 ? 27 + d : d - 31;
+              const label = inMonth ? d : d < 1 ? 31 + d : d - 31;
               return (
                 <span key={i} className="relative flex h-9 flex-col items-center justify-center">
                   <span
                     className={cn(
                       "flex h-8 w-8 items-center justify-center rounded-full text-sm",
                       !inMonth && "text-muted-foreground/50",
-                      inMonth && d === 20 && "bg-primary font-semibold text-primary-foreground",
+                      inMonth && d === 11 && "bg-primary font-semibold text-primary-foreground",
                       inMonth && published.includes(d) && "bg-success-soft font-medium text-success",
                     )}
                   >
@@ -119,8 +114,8 @@ function Index() {
             <thead>
               <tr className="text-left text-xs text-muted-foreground">
                 <th className="pb-3 font-normal">Клиент</th>
-                <th className="pb-3 font-normal">Ответственный</th>
-                <th className="pb-3 font-normal">След. пост</th>
+                <th className="pb-3 font-normal">Копирайтер</th>
+                <th className="pb-3 font-normal">Старт</th>
                 <th className="pb-3 text-right font-normal" />
               </tr>
             </thead>
@@ -149,34 +144,32 @@ function Index() {
           </Link>
         </SectionCard>
 
-        <SectionCard title="Последние публикации" bodyClassName="px-6 pb-5 pt-3">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs text-muted-foreground">
-                <th className="pb-3 font-normal">Пост</th>
-                <th className="pb-3 font-normal">Клиент</th>
-                <th className="pb-3 font-normal">Дата</th>
-                <th className="pb-3 font-normal">Статус</th>
-              </tr>
-            </thead>
-            <tbody>
-              {latestPosts.map((p) => (
-                <tr key={p.title} className="border-t border-border/70">
-                  <td className="py-3.5">{p.title}</td>
-                  <td className="py-3.5 text-muted-foreground">{p.client}</td>
-                  <td className="py-3.5 text-muted-foreground">{p.date}</td>
-                  <td className="py-3.5">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-success">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Опубликован
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <Link to="/content-plans" className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary">
-            Все публикации <ArrowRight className="h-4 w-4" />
-          </Link>
+        <SectionCard title="Требуют внимания" subtitle="Что стоит разобрать сегодня">
+          <ul className="space-y-3">
+            {attentionItems.map((a, i) => {
+              const Icon = attentionIcons[i] ?? Clock;
+              return (
+                <li key={a.label} className="flex items-center gap-4 rounded-xl border border-border p-4">
+                  <span
+                    className={cn(
+                      "flex h-11 w-11 items-center justify-center rounded-xl",
+                      a.tone === "pink" && "bg-pink-soft text-pink",
+                      a.tone === "warning" && "bg-warning-soft text-warning-foreground",
+                      a.tone === "info" && "bg-info-soft text-info",
+                      a.tone === "primary" && "bg-primary-soft text-primary",
+                    )}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="flex-1 leading-tight">
+                    <span className="block text-sm font-semibold">{a.label}</span>
+                    <span className="block text-xs text-muted-foreground">{a.hint}</span>
+                  </span>
+                  <span className="text-2xl font-bold tracking-tight">{a.count}</span>
+                </li>
+              );
+            })}
+          </ul>
         </SectionCard>
       </div>
     </AppLayout>
