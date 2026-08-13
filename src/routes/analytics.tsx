@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Users, Eye, Heart, MessageCircle, Repeat2, MousePointerClick, TrendingUp, Download } from "lucide-react";
+import { Users, Eye, Heart, MessageCircle, Repeat2, MousePointerClick, TrendingUp, Download, Share2 } from "lucide-react";
 import { AppLayout, TopUser } from "@/components/AppLayout";
 import { SectionCard, StatCard } from "@/components/ui-kit";
-import { analyticsWeeks, chartData } from "@/lib/data";
+import { analyticsClients, analyticsWeeks, chartData } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/analytics")({
@@ -121,9 +121,9 @@ function Analytics() {
         <SectionCard title="Заметки">
           <ul className="space-y-3 text-sm">
             {[
-              { d: "26.04.2026", t: "Снижение комментариев связано с отпуском клиента — меньше личных ответов." },
-              { d: "24.04.2026", t: "Добавить больше вопросов в конце поста для вовлечения аудитории." },
-              { d: "22.04.2026", t: "Тестируем новый формат: короткие инсайты по 600 символов." },
+              { d: "09.08.2026", t: "Снижение комментариев связано с отпуском клиента — меньше личных ответов." },
+              { d: "06.08.2026", t: "Добавить больше вопросов в конце поста для вовлечения аудитории." },
+              { d: "04.08.2026", t: "Тестируем новый формат: короткие инсайты по 600 символов." },
             ].map((n) => (
               <li key={n.d} className="rounded-xl border border-border p-4">
                 <p className="text-xs text-muted-foreground">{n.d}</p>
